@@ -1,4 +1,5 @@
 import androidx.compose.desktop.Window
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
@@ -10,9 +11,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
+enum class Direction {
+    LEFT, RIGHT, STOP
+}
+
+const val arc1length = 8
+const val arc2length = 10
+const val arc3length = 12
+
 fun main() = Window {
     var text by remember { mutableStateOf("Hello, World!") }
     var text3 by remember { mutableStateOf("Hello2") }
+
+    var leftHandPos by remember { mutableStateOf(0) }
+    var rightHandPos by remember { mutableStateOf(0) }
+    var arc1Pos: Int by remember { mutableStateOf(arc1length / 2) }
+    var arc2Pos: Int by remember { mutableStateOf(arc2length / 2) }
+    var arc3Pos: Int by remember { mutableStateOf(arc3length / 2) }
+    var direction1 by remember { mutableStateOf(Direction.LEFT) }
+    var direction2 by remember { mutableStateOf(Direction.RIGHT) }
+    var direction3 by remember { mutableStateOf(Direction.LEFT) }
 
     MaterialTheme {
         Column {
@@ -34,14 +52,7 @@ fun main() = Window {
 
             ball()
 
-            Row {
-                Button(onClick = { leftClick() }) {
-                    Text("<")
-                }
-                Button(onClick = { rightClick() }) {
-                    Text(">")
-                }
-            }
+
         }
 
 
@@ -75,8 +86,15 @@ fun ballPlaceholder(active: Boolean) {
             .height(100.dp)
             .width(100.dp)
             .padding(10.dp)
-            .background(color = if (active) Color.Blue else Color.Gray)
-    )
+            // .background(color = if (active) Color.Blue else Color.Gray)
+    ) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawCircle(
+                color = if (active) Color.Blue else Color.Gray,
+                center = center
+            )
+        }
+    }
 }
 
 /**
@@ -128,6 +146,15 @@ fun ball() {
         Column {
 
         }*/
+        Row(modifier = Modifier
+            .fillMaxWidth()) {
+            Button(onClick = { leftClick() }) {
+                Text("<")
+            }
+            Button(onClick = { rightClick() }) {
+                Text(">")
+            }
+        }
     }
 }
 

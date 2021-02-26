@@ -16,4 +16,16 @@ class BallGame {
     var dir2 = Direction.STOP
     var dir3 = Direction.STOP
 
+    fun step(state: BallState): BallState {
+        TODO()
+    }
 }
+
+data class BallState(
+    val arc1pos: Int,
+    val arc2pos: Int,
+    val arc3pos: Int,
+    val dir1: Direction,
+    val dir2: Direction,
+    val dir3: Direction
+    )
