@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-enum class Direction {
+enum class Direction2 {
     LEFT, RIGHT, STOP
 }
 
@@ -23,14 +23,7 @@ fun main() = Window {
     var text by remember { mutableStateOf("Hello, World!") }
     var text3 by remember { mutableStateOf("Hello2") }
 
-    var leftHandPos by remember { mutableStateOf(0) }
-    var rightHandPos by remember { mutableStateOf(0) }
-    var arc1Pos: Int by remember { mutableStateOf(arc1length / 2) }
-    var arc2Pos: Int by remember { mutableStateOf(arc2length / 2) }
-    var arc3Pos: Int by remember { mutableStateOf(arc3length / 2) }
-    var direction1 by remember { mutableStateOf(Direction.LEFT) }
-    var direction2 by remember { mutableStateOf(Direction.RIGHT) }
-    var direction3 by remember { mutableStateOf(Direction.LEFT) }
+    var ballState by remember { mutableStateOf(BallState()) }
 
     MaterialTheme {
         Column {
@@ -50,7 +43,7 @@ fun main() = Window {
 
             }*/
 
-            ball()
+            ball(ballState, setBallStateToSelf = {ballState = ballState.copy()})
 
 
         }
@@ -60,7 +53,7 @@ fun main() = Window {
 }
 
 fun leftClick() {
-    println("left")
+
 }
 
 fun rightClick() {
@@ -72,8 +65,8 @@ fun rightClick() {
 fun hand(active: Boolean) {
     Box(
         modifier = Modifier
-            .height(100.dp)
-            .width(50.dp)
+            .height(50.dp)
+            .width(20.dp)
             .padding(10.dp)
             .background(color = if (active) Color.Gray else Color.Black)
     )
@@ -83,8 +76,8 @@ fun hand(active: Boolean) {
 fun ballPlaceholder(active: Boolean) {
     Box(
         modifier = Modifier
-            .height(100.dp)
-            .width(100.dp)
+            .height(50.dp)
+            .width(50.dp)
             .padding(10.dp)
             // .background(color = if (active) Color.Blue else Color.Gray)
     ) {
@@ -104,16 +97,16 @@ fun ballPlaceholder(active: Boolean) {
 fun arc(size: Int, ballPos: Int?) {
     Row(
     ) {
-        hand(active = false)
+        //hand(active = false)
         for (i in 0..size) {
             ballPlaceholder(active = i == ballPos)
         }
-        hand(active = false)
+        //hand(active = false)
     }
 }
 
 @Composable
-fun ball() {
+fun ball(ballState: BallState, setBallStateToSelf: () -> Unit) {
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -121,38 +114,33 @@ fun ball() {
             .background(color = Color.LightGray)
     ){
 
-        arc(size = 12, ballPos = 0)
-        arc(size = 10, ballPos = null)
-        arc(size = 8, ballPos = 3)
-
-        /*Column {
-
-            }
-
-
+        Row {
+            hand(active = ballState.handPos == 1)
+            arc(size = ballState.arc1length, ballPos = ballState.arc1.position)
+            hand(active = ballState.handPos == 1)
         }
-        Column {
-
+        Row {
+            hand(active = ballState.handPos == 2)
+            arc(size = ballState.arc2length, ballPos = ballState.arc2.position)
+            hand(active = ballState.handPos == 2)
         }
-        Column {
-
+        Row {
+            hand(active = ballState.handPos == 3)
+            arc(size = ballState.arc3length, ballPos = ballState.arc3.position)
+            hand(active = ballState.handPos == 3)
         }
-        Column {
 
-        }
-        Column {
 
-        }
-        Column {
-
-        }*/
         Row(modifier = Modifier
             .fillMaxWidth()) {
-            Button(onClick = { leftClick() }) {
+            Button(onClick = { ballState.leftClick(); setBallStateToSelf() }) {
                 Text("<")
             }
-            Button(onClick = { rightClick() }) {
+            Button(onClick = { ballState.rightClick(); setBallStateToSelf() }) {
                 Text(">")
+            }
+            Button(onClick = { ballState.step(); setBallStateToSelf() }) {
+                Text("step()")
             }
         }
     }
@@ -160,5 +148,5 @@ fun ball() {
 
 @Composable
 fun previewBall() {
-    ball()
+    // ball()
 }
