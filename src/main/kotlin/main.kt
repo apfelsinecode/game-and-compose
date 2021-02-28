@@ -19,11 +19,25 @@ const val arc1length = 8
 const val arc2length = 10
 const val arc3length = 12
 
+
 fun main() = Window {
     var text by remember { mutableStateOf("Hello, World!") }
     var text3 by remember { mutableStateOf("Hello2") }
-
     var ballState by remember { mutableStateOf(BallState()) }
+
+    val leftClick: () -> Unit = {
+        ballState.leftClick()
+        ballState = ballState.copy()
+    }
+    val rightClick = {
+        ballState.rightClick()
+        ballState = ballState.copy()
+    }
+
+    val step = {
+        ballState.step()
+        ballState = ballState.copy()
+    }
 
     MaterialTheme {
         Column {
@@ -43,7 +57,7 @@ fun main() = Window {
 
             }*/
 
-            ball(ballState, setBallStateToSelf = {ballState = ballState.copy()})
+            ball(ballState, leftClick = leftClick, rightClick = rightClick, step = step)
 
 
         }
@@ -52,13 +66,6 @@ fun main() = Window {
     }
 }
 
-fun leftClick() {
-
-}
-
-fun rightClick() {
-    println("right")
-}
 
 
 @Composable
@@ -68,7 +75,7 @@ fun hand(active: Boolean) {
             .height(50.dp)
             .width(20.dp)
             .padding(10.dp)
-            .background(color = if (active) Color.Gray else Color.Black)
+            .background(color = if (active) Color.Blue else Color.Red)
     )
 }
 
@@ -106,7 +113,7 @@ fun arc(size: Int, ballPos: Int?) {
 }
 
 @Composable
-fun ball(ballState: BallState, setBallStateToSelf: () -> Unit) {
+fun ball(ballState: BallState, leftClick: () -> Unit, rightClick: () -> Unit, step: () -> Unit) {
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -133,13 +140,13 @@ fun ball(ballState: BallState, setBallStateToSelf: () -> Unit) {
 
         Row(modifier = Modifier
             .fillMaxWidth()) {
-            Button(onClick = { ballState.leftClick(); setBallStateToSelf() }) {
+            Button(onClick = leftClick) {
                 Text("<")
             }
-            Button(onClick = { ballState.rightClick(); setBallStateToSelf() }) {
+            Button(onClick = rightClick /*; setBallStateToSelf()*/ ){
                 Text(">")
             }
-            Button(onClick = { ballState.step(); setBallStateToSelf() }) {
+            Button(onClick = step) {
                 Text("step()")
             }
         }
