@@ -45,7 +45,7 @@ data class BallState(
 
 
 
-    fun leftClick() {
+    fun leftClick(): BallState {
         handPos = when (handPos) {
             1, 2 -> {
                 arc1.reflected = true
@@ -60,6 +60,7 @@ data class BallState(
                 3
             }
         }
+        return this
     }
 
     fun rightClick() {

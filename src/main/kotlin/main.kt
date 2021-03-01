@@ -25,18 +25,28 @@ fun main() = Window {
     var text3 by remember { mutableStateOf("Hello2") }
     var ballState by remember { mutableStateOf(BallState()) }
 
+    var handPos by remember { mutableStateOf( 2)}
+    var arc1 by remember { mutableStateOf(ballState.arc1) }
+    var arc2 by remember { mutableStateOf(ballState.arc2) }
+    var arc3 by remember { mutableStateOf(ballState.arc3) }
+
+
     val leftClick: () -> Unit = {
-        ballState.leftClick()
-        ballState = ballState.copy()
+        ballState = ballState.leftClick()
+        handPos = ballState.handPos
     }
     val rightClick = {
         ballState.rightClick()
         ballState = ballState.copy()
+        handPos = ballState.handPos
     }
 
     val step = {
         ballState.step()
         ballState = ballState.copy()
+        arc1 = ballState.arc1.copy()
+        arc2 = ballState.arc2.copy()
+        arc3 = ballState.arc3.copy()
     }
 
     MaterialTheme {
@@ -57,7 +67,7 @@ fun main() = Window {
 
             }*/
 
-            ball(ballState, leftClick = leftClick, rightClick = rightClick, step = step)
+            ball(ballState, arc1, arc2, arc3, handPos = handPos, leftClick = leftClick, rightClick = rightClick, step = step)
 
 
         }
@@ -73,9 +83,9 @@ fun hand(active: Boolean) {
     Box(
         modifier = Modifier
             .height(50.dp)
-            .width(20.dp)
+            .width(40.dp)
             .padding(10.dp)
-            .background(color = if (active) Color.Blue else Color.Red)
+            .background(color = if (active) Color.Black else Color.Gray)
     )
 }
 
@@ -113,7 +123,8 @@ fun arc(size: Int, ballPos: Int?) {
 }
 
 @Composable
-fun ball(ballState: BallState, leftClick: () -> Unit, rightClick: () -> Unit, step: () -> Unit) {
+fun ball(ballState: BallState, arc1: ArcState, arc2: ArcState, arc3: ArcState,
+         handPos: Int,  leftClick: () -> Unit, rightClick: () -> Unit, step: () -> Unit) {
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -122,19 +133,19 @@ fun ball(ballState: BallState, leftClick: () -> Unit, rightClick: () -> Unit, st
     ){
 
         Row {
-            hand(active = ballState.handPos == 1)
-            arc(size = ballState.arc1length, ballPos = ballState.arc1.position)
-            hand(active = ballState.handPos == 1)
+            hand(active = handPos == 1)
+            arc(size = ballState.arc1length, ballPos = arc1.position)
+            hand(active = handPos == 1)
         }
         Row {
-            hand(active = ballState.handPos == 2)
-            arc(size = ballState.arc2length, ballPos = ballState.arc2.position)
-            hand(active = ballState.handPos == 2)
+            hand(active = handPos == 2)
+            arc(size = ballState.arc2length, ballPos = arc2.position)
+            hand(active = handPos == 2)
         }
         Row {
-            hand(active = ballState.handPos == 3)
-            arc(size = ballState.arc3length, ballPos = ballState.arc3.position)
-            hand(active = ballState.handPos == 3)
+            hand(active = handPos == 3)
+            arc(size = ballState.arc3length, ballPos = arc3.position)
+            hand(active = handPos == 3)
         }
 
 
