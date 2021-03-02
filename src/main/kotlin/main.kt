@@ -23,30 +23,31 @@ const val arc3length = 12
 fun main() = Window {
     var text by remember { mutableStateOf("Hello, World!") }
     var text3 by remember { mutableStateOf("Hello2") }
-    var ballState by remember { mutableStateOf(BallState()) }
+    var ballState = remember { mutableStateOf(BallState()) }
 
     var handPos by remember { mutableStateOf( 2)}
-    var arc1 by remember { mutableStateOf(ballState.arc1) }
-    var arc2 by remember { mutableStateOf(ballState.arc2) }
-    var arc3 by remember { mutableStateOf(ballState.arc3) }
+    var arc1 by remember { mutableStateOf(ballState.value.arcs[0]) }
+    var arc2 by remember { mutableStateOf(ballState.value.arcs[1]) }
+    var arc3 by remember { mutableStateOf(ballState.value.arcs[2]) }
 
 
     val leftClick: () -> Unit = {
-        ballState = ballState.leftClick()
-        handPos = ballState.handPos
+        ballState.value.leftClick()
+        ballState.component2()(ballState.value)
+        handPos = ballState.value.handPos
     }
     val rightClick = {
-        ballState.rightClick()
-        ballState = ballState.copy()
-        handPos = ballState.handPos
+        ballState.value.leftClick()
+        ballState.component2()(ballState.value)
+        handPos = ballState.value.handPos
     }
 
     val step = {
-        ballState.step()
-        ballState = ballState.copy()
-        arc1 = ballState.arc1.copy()
-        arc2 = ballState.arc2.copy()
-        arc3 = ballState.arc3.copy()
+        ballState.value.step()
+        ballState.component2()(ballState.value.copy())
+        // arc1 = ballState.arc1.copy()
+        // arc2 = ballState.arc2.copy()
+        // arc3 = ballState.arc3.copy()
     }
 
     MaterialTheme {
@@ -67,7 +68,8 @@ fun main() = Window {
 
             }*/
 
-            ball(ballState, arc1, arc2, arc3, handPos = handPos, leftClick = leftClick, rightClick = rightClick, step = step)
+            ball(ballState.value, null, null, null,
+                handPos = handPos, leftClick = leftClick, rightClick = rightClick, step = step)
 
 
         }
@@ -123,7 +125,7 @@ fun arc(size: Int, ballPos: Int?) {
 }
 
 @Composable
-fun ball(ballState: BallState, arc1: ArcState, arc2: ArcState, arc3: ArcState,
+fun ball(ballState: BallState, arc1: ArcState?, arc2: ArcState?, arc3: ArcState?,
          handPos: Int,  leftClick: () -> Unit, rightClick: () -> Unit, step: () -> Unit) {
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -134,17 +136,17 @@ fun ball(ballState: BallState, arc1: ArcState, arc2: ArcState, arc3: ArcState,
 
         Row {
             hand(active = handPos == 1)
-            arc(size = ballState.arc1length, ballPos = arc1.position)
+            arc(size = ballState.arc1length, ballPos = ballState.arcs[0].position)
             hand(active = handPos == 1)
         }
         Row {
             hand(active = handPos == 2)
-            arc(size = ballState.arc2length, ballPos = arc2.position)
+            arc(size = ballState.arc2length, ballPos = ballState.arcs[1].position)
             hand(active = handPos == 2)
         }
         Row {
             hand(active = handPos == 3)
-            arc(size = ballState.arc3length, ballPos = arc3.position)
+            arc(size = ballState.arc3length, ballPos = ballState.arcs[2].position)
             hand(active = handPos == 3)
         }
 

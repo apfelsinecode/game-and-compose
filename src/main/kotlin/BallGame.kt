@@ -20,26 +20,28 @@ data class BallState(
 
     var handPos: Int = 2,
 ) {
-    lateinit var arc1: ArcState
-    lateinit var arc2: ArcState
-    lateinit var arc3: ArcState
+    // lateinit var arc1: ArcState
+    // lateinit var arc2: ArcState
+    // lateinit var arc3: ArcState
+    lateinit var arcs: Array<ArcState>
     val arc3length: Int = 8
     val arc2length: Int = 10
     val arc1length: Int = 12
 
     constructor() : this(2) {
-        arc1 = ArcState(
+        val arc1 = ArcState(
             position = Random.nextInt(from = (0.3 * arc1length).toInt(), until = (0.7 * arc1length).toInt()),
             direction = if (Random.nextBoolean()) Direction.LEFT else Direction.RIGHT
         )
-        arc2 = ArcState(
+        val arc2 = ArcState(
             position = Random.nextInt(from = (0.3 * arc2length).toInt(), until = (0.7 * arc2length).toInt()),
             direction = if (Random.nextBoolean()) Direction.LEFT else Direction.RIGHT
         )
-        arc3 = ArcState(
+        val arc3 = ArcState(
             position = Random.nextInt(from = (0.3 * arc3length).toInt(), until = (0.7 * arc3length).toInt()),
             direction = if (Random.nextBoolean()) Direction.LEFT else Direction.RIGHT
         )
+        arcs = arrayOf(arc1, arc2, arc3)
         println(this)
     }
 
@@ -48,15 +50,15 @@ data class BallState(
     fun leftClick(): BallState {
         handPos = when (handPos) {
             1, 2 -> {
-                arc1.reflected = true
+                arcs[0] = arcs[0].copy(reflected = true)
                 1
             }
             3 -> {
-                arc2.reflected = true
+                arcs[1] = arcs[1].copy(reflected = true)
                 2
             }
             else -> {
-                arc3.reflected = true
+                arcs[2] = arcs[2].copy(reflected = true)
                 3
             }
         }
@@ -66,15 +68,15 @@ data class BallState(
     fun rightClick() {
         handPos = when (handPos) {
             1 -> {
-                arc2.reflected = true
+                arcs[1] = arcs[1].copy(reflected = true)
                 2
             }
             2, 3 -> {
-                arc3.reflected = true
+                arcs[2] = arcs[2].copy(reflected = true)
                 3
             }
             else -> {
-                arc1.reflected = true
+                arcs[0] = arcs[0].copy(reflected = true)
                 1
             }
         }
@@ -82,37 +84,42 @@ data class BallState(
 
 
     fun step(): BallState {
-        for (arc in arrayOf(arc1, arc2, arc3))
+        for ((index, arc) in arcs.withIndex())
         {
             when (arc.direction) {
                 Direction.LEFT ->
                     if (arc.reflected)
-                        arc.direction = Direction.RIGHT
+                        arcs[index] = arc.copy(direction = Direction.RIGHT)
                     else
-                        arc.position--
+                        arcs[index] = arc.copy(position = arc.position - 1)
                 Direction.RIGHT ->
                     if (arc.reflected)
-                        arc.direction = Direction.LEFT
+                        arcs[index] = arc.copy(direction = Direction.LEFT)
                     else
-                        arc.position++
+                        arcs[index] = arc.copy(position = arc.position + 1)
                 else -> {}
             }
-            arc.reflected = false
+            if (arc.reflected) {
+                arcs[index] = arc.copy(reflected = false)
+            }
         }
         println(this)
         return this
     }
 
     override fun toString(): String {
-        return "BallState(arc1=$arc1, arc2=$arc2, arc3=$arc3, handPos=$handPos, arc3length=$arc3length, arc2length=$arc2length, arc1length=$arc1length)"
+        return "BallState(handPos=$handPos, arcs=${arcs.contentToString()}, arc3length=$arc3length, arc2length=$arc2length, arc1length=$arc1length)"
     }
+
+
 }
 
 
 
 
 data class ArcState(
-    var position: Int,
-    var direction: Direction,
-    var reflected: Boolean = false
+    val position: Int,
+    val direction: Direction,
+    val reflected: Boolean = false
 )
+
